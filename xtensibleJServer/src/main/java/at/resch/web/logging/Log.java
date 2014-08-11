@@ -47,4 +47,12 @@ public class Log {
     public static void w(String message, Throwable e) {
         log.warn(message, e);
     }
+
+    public static void f(String message) {
+        log.fatal(message);
+    }
+
+    public static void f(String message, Throwable e) {
+        log.fatal(message, e);
+    }
 }

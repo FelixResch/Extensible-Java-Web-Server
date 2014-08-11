@@ -10,29 +10,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.4-alpha1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore-nio</artifactId>
-            <version>4.4-alpha1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.4-alpha1</version>
-        </dependency>
-        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -55,5 +35,22 @@
             <version>2.2.2</version>
         </dependency>
     </dependencies>
+
+
+    <profiles><profile>
+        <id>traverse</id>
+        <activation><property><name>traverse</name></property></activation>
+        <build><plugins><plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+                <executable>java</executable>
+                <arguments>
+                    <argument>-classpath</argument><classpath />
+                    <argument>at.resch.web.startup.Updater</argument>
+                </arguments>
+            </configuration>
+        </plugin></plugins></build>
+    </profile></profiles>
 
 </project>
