@@ -39,4 +39,12 @@ public class Log {
     public static void e(String message, Throwable e) {
         log.error(message, e);
     }
+
+    public static void w(String message) {
+        log.warn(message);
+    }
+
+    public static void w(String message, Throwable e) {
+        log.warn(message, e);
+    }
 }

@@ -35,7 +35,8 @@ public class Updater {
         try {
             coreVersions.loadFromXML(new FileInputStream("core_versions.properties"));
         } catch (FileNotFoundException e) {
-            coreVersions.setProperty("core_html", "0.1-indev");
+            Log.w("File not found. Using hardcoded values. (This will most likely cause an update!)");
+            coreVersions.setProperty("core_html", "0.0.1-indev");
         }
     }
 
