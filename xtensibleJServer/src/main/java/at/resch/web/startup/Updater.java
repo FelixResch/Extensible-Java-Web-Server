@@ -5,6 +5,9 @@ import at.resch.web.logging.Log;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Properties;
 
 /**
@@ -32,12 +35,32 @@ public class Updater {
         try {
             coreVersions.loadFromXML(new FileInputStream("core_versions.properties"));
         } catch (FileNotFoundException e) {
-            coreVersions.setProperty("core_html.jar", "0.1-indev");
+            coreVersions.setProperty("core_html", "0.1-indev");
         }
     }
 
     protected void updateCoreWithGit() {
-
+        try {
+            Log.d("Fetching remote version properties");
+            URL url = new URL("https://raw.githubusercontent.com/FelixResch/Extensible-Java-Web-Server/master/xtensibleJServer/core_versions.properties");
+            URLConnection con = url.openConnection();
+            Properties remote = new Properties();
+            remote.load(con.getInputStream());
+            Log.i("Remote Versions");
+            remote.list(System.out);
+            Log.d("Comparing with local versions");
+            for (Object key : remote.keySet()) {
+                if (coreVersions.containsKey(key)) {
+                    if (!coreVersions.getProperty(key.toString()).equals(remote.getProperty(key.toString()))) {
+                        Log.d("Updating " + key.toString());
+                    }
+                }
+            }
+        } catch (MalformedURLException e) {
+            Log.e("Malformed URL", e);
+        } catch (IOException e) {
+            Log.e("Error while reading remote versions file");
+        }
     }
 
 
