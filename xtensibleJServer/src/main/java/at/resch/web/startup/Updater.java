@@ -83,7 +83,15 @@ public class Updater {
             Log.d("Initializing core_lib directory");
             f.mkdir();
         } else if (f.exists() && f.isFile()) {
-            Log.f("core_lib folder is a file. Please delte the file and restart the Server!");
+            Log.f("core_lib folder is a file. Please delete the file and restart the Server!");
+            System.exit(-1);
+        }
+        File libs = new File("libs");
+        if(!libs.exists()) {
+            Log.d("Initializing libs directory");
+            libs.mkdir();
+        } else if (libs.exists() && libs.isFile()) {
+            Log.f("libs folder is a file. Please delete the file and restart the Server!");
             System.exit(-1);
         }
         try {
@@ -97,27 +105,75 @@ public class Updater {
             Log.d("Comparing with local versions");
             for (Object key : remote.keySet()) {
                 if (!coreVersions.containsKey(key) || !coreVersions.getProperty(key.toString()).equals(remote.getProperty(key.toString()))) {
-                        Log.d("Updating " + key.toString());
-                        URL lib = new URL("https://github.com/FelixResch/Extensible-Java-Web-Server/raw/master/" + key + "/target/" + key + "-" + remote.getProperty(key.toString()) + ".jar");
-                        URLConnection lib_con = lib.openConnection();
-                        int content = lib_con.getContentLength();
-                        FileOutputStream fos = new FileOutputStream("core_lib/" + key + ".jar");
-                        InputStream lib_in = lib_con.getInputStream();
-                        byte[] buffer = new byte[4096];
-                        int n = 0;
-                        int current = 0;
-                        while((n = lib_in.read(buffer)) != -1) {
-                            fos.write(buffer, 0, n);
-                            current += n;
-                            drawProgress(current, content, true);
-                        }
-                        drawProgress(content, content, true);
-                        System.out.println();
-                        fos.close();
-                        lib_in.close();
-                        coreVersions.setProperty(key.toString(), remote.getProperty(key.toString()));
-                        Log.i("Download complete! (" + lib.toString() + ")");
+                    Log.d("Updating " + key.toString());
+                    URL lib = new URL("https://github.com/FelixResch/Extensible-Java-Web-Server/raw/master/" + key + "/target/" + key + "-" + remote.getProperty(key.toString()) + ".jar");
+                    URLConnection lib_con = lib.openConnection();
+                    int content = lib_con.getContentLength();
+                    FileOutputStream fos = new FileOutputStream("core_lib/" + key + ".jar");
+                    InputStream lib_in = lib_con.getInputStream();
+                    byte[] buffer = new byte[4096];
+                    int n = 0;
+                    int current = 0;
+                    while((n = lib_in.read(buffer)) != -1) {
+                        fos.write(buffer, 0, n);
+                        current += n;
+                        drawProgress(current, content, true);
+                    }
+                    drawProgress(content, content, true);
+                    System.out.println();
+                    fos.close();
+                    lib_in.close();
+                    coreVersions.setProperty(key.toString(), remote.getProperty(key.toString()));
+                    Log.i("Download complete! (" + lib.toString() + ")");
                 }
+                Log.d("Resolving dependencies!");
+                URL pom = new URL("https://raw.githubusercontent.com/FelixResch/Extensible-Java-Web-Server/master/" + key + "/pom.xml");
+                URLConnection pom_con = pom.openConnection();
+                BufferedReader din = new BufferedReader(new InputStreamReader(pom_con.getInputStream()));
+                String line;
+                String groupId = null, artifactId = null, version = null;
+                while ((line = din.readLine()) != null) {
+                    line = line.trim();
+                    if(line.startsWith("<dependency>")) {
+                        groupId = null;
+                        artifactId = null;
+                        version = null;
+                    } else if (line.startsWith("<groupId>")) {
+                        groupId = line.substring(9, line.length() - 10);
+                    } else if (line.startsWith("<artifactId>")) {
+                        artifactId = line.substring(12, line.length() - 13);
+                    } else if (line.startsWith("<version>")) {
+                        version = line.substring(9, line.length() - 10);
+                    } else if (line.startsWith("</dependency>")) {
+                        Log.i(key + " requires " + groupId + ":" + artifactId + ":" + version);
+                        File l = new File(libs, artifactId + "-" + version + ".jar");
+                        if(!l.exists()) {
+                            Log.d("Loading requirement");
+                            URL l_url = new URL("http://central.maven.org/maven2/" + groupId.replace(".", "/") + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar");
+                            URLConnection l_con = l_url.openConnection();
+                            int content_lib = l_con.getContentLength();
+                            FileOutputStream fos_l = new FileOutputStream(l);
+                            InputStream l_in = l_con.getInputStream();
+                            byte[] buffer_l = new byte[4096];
+                            int n_l = 0;
+                            int current_l = 0;
+                            while((n_l = l_in.read(buffer_l)) != -1) {
+                                fos_l.write(buffer_l, 0, n_l);
+                                current_l += n_l;
+                                drawProgress(current_l, content_lib, true);
+                            }
+                            drawProgress(content_lib, content_lib, true);
+                            System.out.println();
+                            fos_l.close();
+                            l_in.close();
+                            Log.d("Finished");
+                        } else {
+                            Log.d("Provided");
+                        }
+                        urls.add(l.toURI().toURL());
+                    }
+                }
+                din.close();
                 try {
                     urls.add(new URL("file://" + System.getProperty("user.dir") + "/core_lib/" + key + ".jar"));
                 } catch (MalformedURLException e) {

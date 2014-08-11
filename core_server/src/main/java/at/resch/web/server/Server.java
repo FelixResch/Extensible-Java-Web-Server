@@ -127,7 +127,7 @@ public class Server implements HttpAsyncRequestHandler<HttpRequest> {
         IOEventDispatch ioEventDispatch = new DefaultHttpServerIODispatch(protocolHandler, connFactory);
 
         IOReactorConfig config = IOReactorConfig.custom()
-                .setIoThreadCount(0)
+                .setIoThreadCount(1)
                 .setSoTimeout(3000)
                 .setConnectTimeout(3000)
                 .build();
