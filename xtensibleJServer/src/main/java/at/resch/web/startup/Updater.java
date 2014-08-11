@@ -180,7 +180,10 @@ public class Updater {
                     Log.w("Couldn't add core_lib " + key, e);
                 }
             }
-            Log.d("URLs to load from " + urls.toString());
+            Log.d("Classpath URLs");
+            for(URL u : urls) {
+                Log.d(u.toString());
+            }
             core_jars = new URL[urls.size()];
             for (int i = 0; i < core_jars.length; i++) {
                 core_jars[i] = urls.get(i);

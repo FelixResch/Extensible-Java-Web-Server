@@ -6,7 +6,7 @@
 
     <groupId>at.resch.web</groupId>
     <artifactId>core_server</artifactId>
-    <version>0.0.2-indev</version>
+    <version>0.0.2-indev#build5</version>
 
     <dependencies>
         <dependency>

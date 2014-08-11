@@ -159,6 +159,7 @@ public class Server implements HttpAsyncRequestHandler<HttpRequest> {
         }
 
         String target = httpRequest.getRequestLine().getUri();
+        log.debug("Serving File " + target);
         File file = new File(docRoot, URLDecoder.decode(target, "UTF-8"));
         if(!file.exists()) {
             response.setStatusCode(HttpStatus.SC_NOT_FOUND);
