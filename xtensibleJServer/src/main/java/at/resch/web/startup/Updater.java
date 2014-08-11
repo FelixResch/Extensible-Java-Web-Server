@@ -3,6 +3,7 @@ package at.resch.web.startup;
 import at.resch.web.logging.Log;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -46,9 +47,9 @@ public class Updater {
             Log.d("Class found");
             Log.d("Invoking Method start(String[])");
             try {
-                Method m = server.getMethod("start", String[].class);
+                Method m = server.getMethod("start", new Class<?>[]{String[].class});
                 Object s = server.newInstance();
-                m.invoke(s);
+                m.invoke(s, new Object[] {new String[0]});
             } catch (NoSuchMethodException e) {
                 Log.f("Couldn't find entry point for server", e);
             } catch (InstantiationException e) {
@@ -95,8 +96,7 @@ public class Updater {
             remote.list(System.out);
             Log.d("Comparing with local versions");
             for (Object key : remote.keySet()) {
-                if (coreVersions.containsKey(key)) {
-                    if (!coreVersions.getProperty(key.toString()).equals(remote.getProperty(key.toString()))) {
+                if (!coreVersions.containsKey(key) || !coreVersions.getProperty(key.toString()).equals(remote.getProperty(key.toString()))) {
                         Log.d("Updating " + key.toString());
                         URL lib = new URL("https://github.com/FelixResch/Extensible-Java-Web-Server/raw/master/" + key + "/target/" + key + "-" + remote.getProperty(key.toString()) + ".jar");
                         URLConnection lib_con = lib.openConnection();
@@ -117,12 +117,11 @@ public class Updater {
                         lib_in.close();
                         coreVersions.setProperty(key.toString(), remote.getProperty(key.toString()));
                         Log.i("Download complete! (" + lib.toString() + ")");
-                    }
-                    try {
-                        urls.add(new URL("file://" + System.getProperty("user.dir") + "/core_lib/" + key + ".jar"));
-                    } catch (MalformedURLException e) {
-                        Log.w("Couldn't add core_lib " + key, e);
-                    }
+                }
+                try {
+                    urls.add(new URL("file://" + System.getProperty("user.dir") + "/core_lib/" + key + ".jar"));
+                } catch (MalformedURLException e) {
+                    Log.w("Couldn't add core_lib " + key, e);
                 }
             }
             Log.d("URLs to load from " + urls.toString());

@@ -6,7 +6,7 @@
 
     <groupId>at.resch.web</groupId>
     <artifactId>core_server</artifactId>
-    <version>0.0.1-indev</version>
+    <version>0.0.2-indev</version>
 
     <dependencies>
         <dependency>
@@ -14,11 +14,11 @@
             <artifactId>commons-codec</artifactId>
             <version>1.9</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.4-alpha1</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore-nio</artifactId>

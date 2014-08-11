@@ -9,6 +9,9 @@
         <Logger name="at.resch.web.logging.Log" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
+        <Logger name="at.resch.web.server.Server" level="debug" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
         <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
