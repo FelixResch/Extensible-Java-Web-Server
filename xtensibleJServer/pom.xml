@@ -8,6 +8,7 @@
     <artifactId>xtensibleJServer</artifactId>
     <version>0.1-indev</version>
 
+
     <dependencies>
         <dependency>
             <groupId>commons-logging</groupId>

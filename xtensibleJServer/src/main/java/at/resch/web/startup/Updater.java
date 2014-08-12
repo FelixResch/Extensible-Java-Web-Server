@@ -3,7 +3,6 @@ package at.resch.web.startup;
 import at.resch.web.logging.Log;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -96,8 +95,12 @@ public class Updater {
         }
         try {
             Log.d("Fetching remote version properties");
-            URL url = new URL("https://raw.githubusercontent.com/FelixResch/Extensible-Java-Web-Server/master/xtensibleJServer/core_versions.properties");
+            URL url = new URL("https://raw.githubusercontent.com/FelixResch/Extensible-Java-Web-Server/master/xtensibleJServer/core_versions.properties?no-cache=" + Math.random());
             URLConnection con = url.openConnection();
+            con.setUseCaches(false);
+            con.setRequestProperty("Cache-Control", "no-cache");
+            con.setRequestProperty("Pragma", "no-cache");
+            con.connect();
             Properties remote = new Properties();
             remote.load(con.getInputStream());
             Log.i("Remote Versions");
